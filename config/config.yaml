@@ -1,0 +1,64 @@
+# Experiment configuration. Paths are relative to the repository root.
+
+# auto picks CUDA when it is available. The published results were produced on CPU.
+device: auto
+
+data:
+  root: data
+
+training:
+  # Every GAN is trained once per seed, and results report the spread across seeds
+  seeds: [42, 43, 44]
+  epochs: 50
+  batch_size: 128
+  learning_rate: 0.0002
+  # Beta1 of 0.5 follows the DCGAN paper; the default of 0.9 makes GAN training oscillate
+  adam_betas: [0.5, 0.999]
+  latent_dim: 100
+  # One-sided label smoothing: the discriminator aims for 0.9 on real images, not 1.0
+  real_label_target: 0.9
+  # FID on a small sample every few epochs shows progress that the losses do not
+  tracking_interval: 5
+  tracking_sample_size: 2000
+
+# The GANs share every training setting above and differ only in these two fields
+models:
+  vanilla_gan:
+    display_name: Vanilla GAN
+    architecture: fully_connected
+    conditional: false
+  dcgan:
+    display_name: DCGAN
+    architecture: convolutional
+    conditional: false
+  cgan:
+    display_name: Conditional GAN
+    architecture: convolutional
+    conditional: true
+
+classifier:
+  seed: 0
+  epochs: 3
+  batch_size: 128
+  learning_rate: 0.001
+
+evaluation:
+  seed: 0
+  # The coursework scored pixel MSE on the first 1,000 test images
+  pixel_mse_size: 1000
+  # Generated images per model and seed for FID and the classifier-based metrics
+  sample_size: 10000
+  # A sample counts as recognisable when the classifier gives its top class this probability
+  confidence_threshold: 0.9
+
+outputs:
+  run_dir: runs
+  report_dir: reports
+
+api:
+  host: 127.0.0.1
+  port: 8000
+  checkpoint_path: runs/cgan_seed42/generator.pt
+  max_digits: 32
+  max_variations: 8
+  max_scale: 8

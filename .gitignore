@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# MNIST, training runs, and generated outputs stay out of version control
+data/*
+!data/.gitkeep
+reports/*
+!reports/.gitkeep
+runs/
+outputs/
+
+# Local settings and secrets
+.env
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
