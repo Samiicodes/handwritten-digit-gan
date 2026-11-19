@@ -10,6 +10,8 @@ repos:
         name: check for added large files
         entry: uv run python -m pre_commit_hooks.check_added_large_files --maxkb=1000
         language: system
+        # The coursework report is kept exactly as submitted
+        exclude: ^docs/coursework_report\.pdf$
       - id: check-merge-conflict
         name: check for merge conflicts
         entry: uv run python -m pre_commit_hooks.check_merge_conflict
