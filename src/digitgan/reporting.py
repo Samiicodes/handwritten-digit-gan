@@ -1,6 +1,7 @@
 '''The evaluation report in Markdown and the metrics as JSON.'''
 
 import json
+import statistics
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -204,18 +205,18 @@ def _training_time_section(data: ReportData) -> str:
     lines = [
         '## Training time',
         '',
-        'Wall-clock time per run, including the FID checks. Measured on the machine that '
-        'produced this report.',
+        'Wall-clock time per run, including the FID checks, measured on the machine that '
+        'produced this report. Totals also count any time the machine was suspended during a '
+        'run. The median epoch does not, so it is the better guide to speed.',
         '',
-        '| Run | Epochs | Seconds per epoch | Total minutes |',
+        '| Run | Epochs | Median seconds per epoch | Total minutes |',
         '| --- | --- | --- | --- |',
     ]
     for checkpoint in data.checkpoints:
-        seconds = sum(stats.seconds for stats in checkpoint.history)
-        epochs = len(checkpoint.history)
+        seconds = [stats.seconds for stats in checkpoint.history]
         lines.append(
-            f'| {checkpoint.display_name}, seed {checkpoint.seed} | {epochs} '
-            f'| {seconds / epochs:.1f} | {seconds / 60:.1f} |'
+            f'| {checkpoint.display_name}, seed {checkpoint.seed} | {len(seconds)} '
+            f'| {statistics.median(seconds):.1f} | {sum(seconds) / 60:.1f} |'
         )
     return '\n'.join(lines)
 
